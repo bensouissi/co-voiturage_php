@@ -1,26 +1,152 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Belhassen
- * Date: 29/10/2015
- * Time: 23:16
- */
 
-class UserDAO {
+use \PDO;
+class UserDAO
+{
+    private $db_name;
+    private $db_user;
+    private $db_password;
+    private $db_host;
+    private $pdo;
 
-    public function __construct($dsn, $user=NULL, $pass=NULL, $driver_options=NULL) {
-        $this->PDO = new PDO($dsn, $user, $pass, $driver_options);
-        $this->numExecutes = 0;
-        $this->numStatements = 0;
+    private $code_usr;
+    private $nom;
+    private $prenom;
+    private $date_naissance;
+    private $sexe;
+    private $tel;
+    private $date_inscription;
+    private $email;
+    private $password;
+    private $ville;
+    private $note;
+    private $qst_securite;
+    private $reponse_securite;
+
+    public function __construct($nom,$prenom,$date_naissance,$sexe,$tel,$date_inscription,$email,$password,$ville,$qst_securite,$reponse_securite)
+    {
+        $this->db_name='co_voiturage';
+        $this->db_host='localhost';
+        $this->db_user='root';
+        $this->db_password='';
+
+        $this->nom=$nom;
+        $this->prenom=$prenom;
+        $this->date_naissance=$date_naissance;
+        $this->sexe=$sexe;
+        $this->tel=$tel;
+        $this->date_inscription=$date_inscription;
+        $this->email=$email;
+        $this->password=$password;
+        $this->ville=$ville;
+        $this->qst_securite=$qst_securite;
+        $this->reponse_securite=$reponse_securite;
+
+
     }
-    public function __call($func, $args) {
-        return call_user_func_array(array(&$this->PDO, $func), $args);
+
+    /***************************  Connexion a la base en creant l'objet PDO  ***************************/
+    public function getPDO()
+    {
+        if($this->pdo == null)
+        {
+            $pdo = new PDO('mysql:dbname=co_voiturage;host=localhost','root','');
+            $this->pdo=$pdo;
+        }
+        return $this->pdo ;
     }
-    public function prepare() {
+
+    /***************************  Getters  ***************************/
+    public function getNOM()
+    {
+        return $this->nom;
     }
-    public function query() {
+    public function getPRENOM()
+    {
+        return $this->prenom;
     }
-    public function exec() {
+    public function getDATE_NAISS()
+    {
+        return $this->date_naissance;
     }
+    public function getSEXE()
+    {
+        return $this->sexe;
+    }
+    public function getTEL()
+    {
+        return $this->tel;
+    }
+    public function getDATE_INSC()
+    {
+        return $this->date_inscription;
+    }
+    public function getEMAIL()
+    {
+        return $this->email;
+    }
+    public function getPASSWORD()
+    {
+        return $this->password;
+    }
+    public function getVILLE()
+    {
+        return $this->ville;
+    }
+    public function getQST()
+    {
+        return $this->qst_securite;
+    }
+    public function getREP()
+    {
+        return $this->reponse_securite;
+    }
+
+    /**************  Enregistrer tous le contenus de la table utilisateur dans un tableau $resultat  **************/
+    public function query_affichage_complet()
+    {
+        $resultat=$this->getPDO()->query("select * from user");
+        return $resultat ;
+    }
+    /************  Enregistrer le contenus de la clé $code de la table utilisateur dans un tableau $resultat *********/
+    public function query_affichage_par_cle($code)
+    {
+        $resultat=$this->getPDO()->query("select * from user where Code_usr=".$code);
+        return $resultat ;
+    }
+    /**************  Inserer tous les donnée saisie a partir de l'application dans la table utilisateur   **************/
+    public function query_insertion()
+    {
+
+        $requet = "INSERT INTO user (nom,prenom,date_naissance,sexe,tel,date_inscription,email,password,ville,qst_securite,reponse_securite) VALUES (:nom,:prenom,:date_naissance,:sexe,:tel,:date_inscription,:email,:password,:ville,:qst_securite,:reponse_securite)";
+        $q = $this->getPDO()->prepare($requet);
+        $q->execute(array(':nom'=>$this->getNOM(),
+            ':prenom'=>$this->getPRENOM(),
+            ':date_naissance'=>$this->getDATE_NAISS(),
+            ':sexe'=>$this->getSEXE(),
+            ':tel'=>$this->getTEL(),
+            ':date_inscription'=>$this->getDATE_INSC(),
+            ':email'=>$this->getEMAIL(),
+            ':password'=>$this->getPASSWORD(),
+            ':ville'=>$this->getVILLE(),
+            ':qst_securite'=>$this->getQST(),
+            ':reponse_securite'=>$this->getREP()
+
+
+        ));
+    }
+    /**************  Effacer un enregistrement par son code d'utilisateur  **************/
+    public function query_delete_par_id($id)
+    {
+        $requet="DELETE FROM user WHERE Code_usr=".$id;
+        $q = $this->getPDO()->exec($requet);
+    }
+
+
 
 }
+
+?>
+
+
+

@@ -30,7 +30,7 @@ class UserWS {
     public function login(){
         $login_date = date("Y-m-d H:i:s");
         $flag['code']=0;
-        $loginDAO = new LoginDAO($this->user_mail, $this->pw, $login_date);
+        $loginDAO = new UserDAO($this->user_mail, $this->pw, $login_date);
         if($loginDAO->UserFound()){
             $flag['code'] = 1;
         }

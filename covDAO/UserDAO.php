@@ -135,6 +135,22 @@ class UserDAO
 
         ));
     }
+    public function UserFound(){
+        try{
+            $dbh = new PDO('mysql:dbname=co_voiturage;host=127.0.0.1', 'root', '');
+            $query=$dbh->prepare("Select Code_usr,email,password from user where email=? and password=?");
+            $query->excute(array("email"=> $this->user_login, "password"=> $this->user_pass));
+            $row = $query->fetch(PDO::FETCH_ASSOC);
+
+            if($row)
+                return true;
+            else
+                return false;
+
+        }catch(PDOException  $e ){
+            echo "Error: ".$e;
+        }
+    }
     /**************  Effacer un enregistrement par son code d'utilisateur  **************/
     public function query_delete_par_id($id)
     {

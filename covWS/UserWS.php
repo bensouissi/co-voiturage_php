@@ -6,7 +6,7 @@
  * Time: 23:08
  */
 include("connexion.php");
-include("../covDAO/LoginDAO.php");
+include("../covDAO/UserDAO.php");
 class UserWS {
     private $id_user;
     private $user_name;

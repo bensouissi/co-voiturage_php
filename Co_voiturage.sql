@@ -66,7 +66,7 @@ CREATE TABLE `parcours` (
   `bagage` tinyint(1) NOT NULL,
   `animal` tinyint(1) NOT NULL,
   `etat` tinyint(1) NOT NULL,
-  `nbr_place` int(2) NOT NULL,
+  `nbr_place` int(1) NOT NULL,
   `description` text NOT NULL,
   `tarif` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

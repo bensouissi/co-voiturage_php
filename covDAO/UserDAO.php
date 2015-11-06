@@ -23,15 +23,25 @@ class UserDAO
     private $qst_securite;
     private $reponse_securite;
 
-    public function __construct($email, $password)
+    public function __construct($nom,$prenom,$date_naissance,$sexe,$tel,$date_inscription,$email,$password,$ville,$qst_securite,$reponse_securite)
     {
         $this->db_name='co_voiturage';
         $this->db_host='localhost';
         $this->db_user='root';
         $this->db_password='';
 
+        $this->nom=$nom;
+        $this->prenom=$prenom;
+        $this->date_naissance=$date_naissance;
+        $this->sexe=$sexe;
+        $this->tel=$tel;
+        $this->date_inscription=$date_inscription;
         $this->email=$email;
         $this->password=$password;
+        $this->ville=$ville;
+        $this->qst_securite=$qst_securite;
+        $this->reponse_securite=$reponse_securite;
+
 
     }
 
@@ -96,49 +106,73 @@ class UserDAO
     public function query_affichage_complet()
     {
         $resultat=$this->getPDO()->query("select * from user");
-        return $resultat ;
+        return $resultat ;  //tableau qui contient tous les utilisateurs enregistrer dans la TABLE
     }
-    /************  Enregistrer le contenus de la clé $code de la table utilisateur dans un tableau $resultat *********/
+    /************  Recherche par $code *********/
     public function query_affichage_par_cle($code)
     {
         $resultat=$this->getPDO()->query("select * from user where Code_usr=".$code);
-        return $resultat ;
+        return $resultat ;   //tableau qui contient tous les utilisateurs dont le code est passé en parametre
     }
-    /**************  Inserer tous les donnée saisie a partir de l'application dans la table utilisateur   **************/
+    /************  Recherche par $email *********/
+    public function query_affichage_par_email($email)
+    {
+        $resultat=$this->getPDO()->query("select * from user where email=".$email);
+        return $resultat ;  //tableau qui contient tous les utilisateur dont l'email est passé en parametre
+    }
+
+
+
+    /************  Verifier si l'adresse mail saisie existe deja dans la base *********/
+    public function adresse_valide(){
+        $reponse=true;
+        $resultat=$this->query_affichage_complet();
+        while ($data = $resultat-> fetch())
+        {
+            if ($data['email'] == $this->email)
+                $reponse=false;
+
+
+        }
+        return $reponse;    //Si l'adresse existe dans la TABLE $reponse retourne TRUE si non FALSE
+    }
+
+    /**************  Inserer tous les donnée saisie a partir de l'application dans la TABLE utilisateur   **************/
     public function query_insertion()
     {
 
-        $requet = "INSERT INTO user (nom,prenom,date_naissance,sexe,tel,date_inscription,email,password,ville,qst_securite,reponse_securite) VALUES (:nom,:prenom,:date_naissance,:sexe,:tel,:date_inscription,:email,:password,:ville,:qst_securite,:reponse_securite)";
-        $q = $this->getPDO()->prepare($requet);
-        $q->execute(array(':nom'=>$this->getNOM(),
-            ':prenom'=>$this->getPRENOM(),
-            ':date_naissance'=>$this->getDATE_NAISS(),
-            ':sexe'=>$this->getSEXE(),
-            ':tel'=>$this->getTEL(),
-            ':date_inscription'=>$this->getDATE_INSC(),
-            ':email'=>$this->getEMAIL(),
-            ':password'=>$this->getPASSWORD(),
-            ':ville'=>$this->getVILLE(),
-            ':qst_securite'=>$this->getQST(),
-            ':reponse_securite'=>$this->getREP()
+        $reponse=true;
+        if ($this->adresse_valide())   //Si l'adresse n'appartient a aucun UTILISATEUR .... inserer ces different informations dans la TABLE UTILISATEUR
+        {
+            $requet = "INSERT INTO user (nom,prenom,date_naissance,sexe,tel,date_inscription,email,password,ville,qst_securite,reponse_securite) VALUES (:nom,:prenom,:date_naissance,:sexe,:tel,:date_inscription,:email,:password,:ville,:qst_securite,:reponse_securite)";
+            $q = $this->getPDO()->prepare($requet);
+            $q->execute(array(':nom' => $this->getNOM(),
+                ':prenom' => $this->getPRENOM(),
+                ':date_naissance' => $this->getDATE_NAISS(),
+                ':sexe' => $this->getSEXE(),
+                ':tel' => $this->getTEL(),
+                ':date_inscription' => $this->getDATE_INSC(),
+                ':email' => $this->getEMAIL(),
+                ':password' => $this->getPASSWORD(),
+                ':ville' => $this->getVILLE(),
+                ':qst_securite' => $this->getQST(),
+                ':reponse_securite' => $this->getREP()
 
 
-        ));
+            ));
+
+        }
+        else $reponse=false;
+
+
+        return $reponse;
     }
-
-    /**************  Effacer un enregistrement par son code d'utilisateur  **************/
-    public function query_delete_par_id($id)
-    {
-        $requet="DELETE FROM user WHERE Code_usr=".$id;
-        $q = $this->getPDO()->exec($requet);
-    }
-
 
     public function UserFound(){
         try{
             $dbh = new PDO('mysql:dbname=co_voiturage;host=127.0.0.1', 'root', '');
-            $query=$dbh->prepare("Select Code_usr from user where email=:email and password=:password");
-            $query->execute(array("email"=> $this->email, "password"=> $this->password));
+            $query=$dbh->prepare("Select Code_usr,email,password from user where email=? and password=?");
+            $query->excute(array("email"=> $this->user_login, "password"=> $this->user_pass));
             $row = $query->fetch(PDO::FETCH_ASSOC);
 
             if($row)
@@ -149,6 +183,12 @@ class UserDAO
         }catch(PDOException  $e ){
             echo "Error: ".$e;
         }
+    }
+    /**************  Effacer un enregistrement par son code d'utilisateur  **************/
+    public function query_delete_par_id($id)
+    {
+        $requet="DELETE FROM user WHERE Code_usr=".$id;
+        $q = $this->getPDO()->exec($requet);
     }
 }
 

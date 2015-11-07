@@ -5,7 +5,7 @@
  * Date: 29/10/2015
  * Time: 23:08
  */
-include("connexion.php");
+include("../config.php");
 include("../covDAO/UserDAO.php");
 class UserWS {
     private $id_user;
@@ -30,7 +30,7 @@ class UserWS {
     public function login(){
         $login_date = date("Y-m-d H:i:s");
         $flag['code']=0;
-        $loginDAO = new UserDAO($this->user_mail, $this->pw, $login_date);
+        $loginDAO = new UserDAO($this->user_mail, $this->pw);
         if($loginDAO->UserFound()){
             $flag['code'] = 1;
         }

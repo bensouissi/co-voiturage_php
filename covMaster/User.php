@@ -6,7 +6,7 @@
  * Time: 23:11
  */
 
-include("../covWS/connexion.php");
+include("../covWS/config.php");
 
 class User {
     private $id_user;

@@ -23,24 +23,15 @@ class UserDAO
     private $qst_securite;
     private $reponse_securite;
 
-    public function __construct($nom,$prenom,$date_naissance,$sexe,$tel,$date_inscription,$email,$password,$ville,$qst_securite,$reponse_securite)
+    public function __construct($email,$password)
     {
         $this->db_name='co_voiturage';
         $this->db_host='localhost';
         $this->db_user='root';
         $this->db_password='';
 
-        $this->nom=$nom;
-        $this->prenom=$prenom;
-        $this->date_naissance=$date_naissance;
-        $this->sexe=$sexe;
-        $this->tel=$tel;
-        $this->date_inscription=$date_inscription;
         $this->email=$email;
         $this->password=$password;
-        $this->ville=$ville;
-        $this->qst_securite=$qst_securite;
-        $this->reponse_securite=$reponse_securite;
 
 
     }
@@ -171,8 +162,8 @@ class UserDAO
     public function UserFound(){
         try{
             $dbh = new PDO('mysql:dbname=co_voiturage;host=127.0.0.1', 'root', '');
-            $query=$dbh->prepare("Select Code_usr,email,password from user where email=? and password=?");
-            $query->excute(array("email"=> $this->user_login, "password"=> $this->user_pass));
+            $query=$dbh->prepare("Select Code_usr,email,password from user where email=:email and password=:password");
+            $query->execute(array("email"=> $this->email, "password"=> $this->password));
             $row = $query->fetch(PDO::FETCH_ASSOC);
 
             if($row)

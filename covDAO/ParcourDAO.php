@@ -1,7 +1,7 @@
 <?php
 use \PDO;
 
-class ParcourDAO extends Parcours{
+class ParcourDAO {
     private $db_name;
     private $db_user;
     private $db_password;

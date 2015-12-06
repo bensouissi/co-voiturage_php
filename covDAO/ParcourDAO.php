@@ -53,7 +53,17 @@ class ParcourDAO {
         }
         return $this->pdo ;
     }
+
+    /**
+     * @return mixed
+     */
+
     /***************************  Getters  ***************************/
+    public function getCodeParcours()
+    {
+        return $this->code_parcours;
+    }
+
     public function getCODE_USR(){
         return $this->code_usr;
     }
@@ -127,6 +137,7 @@ class ParcourDAO {
     }
 
     public function UpdateDate($code_parcours,$date_depart){
+
         $sql ="UPDATE parcours SET date_depart=".$date_depart." WHERE Code_parcours =".$code_parcours;
         $q = $this->getPDO()->exec($sql);
     }
@@ -146,6 +157,15 @@ class ParcourDAO {
     {
         $requet="DELETE FROM parcours WHERE Code_parcours=".$code_parcours;
         $q = $this->getPDO()->exec($requet);
+    }
+    public function Reservation(){
+        
+            $nb_place = $this->getNBR_PLACE() - 1;
+            $code_parcours = $this->getCodeParcours();
+            $sql = "UPDATE parcours SET nbr_place=" . $nb_place . " WHERE Code_parcours =" . $code_parcours;
+            $q = $this->getPDO()->exec($sql);
+
+
     }
 
 }

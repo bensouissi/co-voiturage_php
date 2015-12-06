@@ -1,45 +1,23 @@
 <?php
 use \PDO;
 
-class ParcourDAO {
+class ParcourDAO extends Parcours{
     private $db_name;
     private $db_user;
     private $db_password;
     private $db_host;
     private $pdo;
+    private $parcour;
 
-    private $code_parcours;
-    private $code_usr;
-    private $heure_depart;
-    private $date_depart;
-    private $code_ville_depart;
-    private $code_ville_arrive;
-    private $fume;
-    private $bagage;
-    private $animal;
-    private $etat;
-    private $nbr_place;
-    private $description;
-    private $tarif;
 
-    public function __construct($code_usr,$heure_depart,$date_depart,$code_ville_depart,$code_ville_arrive,$fume,$bagage,$animal,$etat,$nbr_place,$description,$tarif){
+    public function __construct(){
         $this->db_name='co_voiturage';
         $this->db_host='localhost';
         $this->db_user='root';
         $this->db_password='';
+        $this->parcour = new Parcours();
 
-        $this->code_usr=$code_usr;
-        $this->heure_depart=$heure_depart;
-        $this->date_depart=$date_depart;
-        $this->code_ville_depart=$code_ville_depart;
-        $this->code_ville_arrive=$code_ville_arrive;
-        $this->fumé=$fume;
-        $this->bagage=$bagage;
-        $this->animal=$animal;
-        $this->etat=$etat;
-        $this->nbr_place=$nbr_place;
-        $this->description=$description;
-        $this->tarif=$tarif;
+
 
 
     }
@@ -58,48 +36,7 @@ class ParcourDAO {
      * @return mixed
      */
 
-    /***************************  Getters  ***************************/
-    public function getCodeParcours()
-    {
-        return $this->code_parcours;
-    }
 
-    public function getCODE_USR(){
-        return $this->code_usr;
-    }
-    public function getHEURE_DEPART(){
-        return $this->heure_depart;
-    }
-    public function getDATE_DEPART(){
-        return $this->date_depart;
-    }
-    public function getCODE_VILLE_DEPART(){
-        return $this->code_ville_depart;
-    }
-    public function getCODE_VILLE_ARRIVE(){
-        return $this->code_ville_arrive;
-    }
-    public function getFUME(){
-        return $this->fume;
-    }
-    public function getBAGAGE(){
-        return $this->bagage;
-    }
-    public function getANIMAL(){
-        return $this->animal;
-    }
-    public function getETAT(){
-        return $this->etat;
-    }
-    public function getNBR_PLACE(){
-        return $this->nbr_place;
-    }
-    public function getDESCRIPTION(){
-        return $this->description;
-    }
-    public function getTARIF(){
-        return $this->tarif;
-    }
     /**************  Enregistrer tous le contenus de la table PARCOURS dans un tableau $resultat  **************/
     public function query_affichage_complet()
     {
@@ -113,56 +50,114 @@ class ParcourDAO {
 
 
 
-        $requet = "INSERT INTO parcours (Code_usr,heure_depart,date_depart,Code_ville_depart,Code_ville_arrive,fume,bagage,animal,etat,nbr_place,description,tarif) VALUES (:code_usr,:heure_depart,:date_depart,:code_ville_depart,:code_ville_arrive,:fume,:bagage,:animal,:etat,:nbr_place,:description,:tarif)";
+        $requet = "INSERT INTO parcours (Code_usr,heure_depart,date_depart,Code_ville_depart,Code_ville_arrive,fume,bagage,animal,score,nbr_place,description,tarif) VALUES (:code_usr,:heure_depart,:date_depart,:code_ville_depart,:code_ville_arrive,:fume,:bagage,:animal,:score,:nbr_place,:description,:tarif)";
 
         $q = $this->getPDO()->prepare($requet);
 
         $q->execute(array(
-            ':code_usr' => $this->getCODE_USR(),
-            ':heure_depart' => $this->getHEURE_DEPART(),
-            ':date_depart' => $this->getDATE_DEPART(),
-            ':code_ville_depart' => $this->getCODE_VILLE_DEPART(),
-            ':code_ville_arrive' => $this->getCODE_VILLE_ARRIVE(),
-            ':fume' => $this->getFUME(),
-            ':bagage' => $this->getBAGAGE(),
-            ':animal' => $this->getANIMAL(),
-            ':etat' => $this->getETAT(),
-            ':nbr_place' => $this->getNBR_PLACE(),
-            ':description' => $this->getDESCRIPTION(),
-            ':tarif' => $this->getTARIF()
+            ':code_usr' => $this->parcour->getIdUser(),
+            ':heure_depart' => $this->parcour->getHrDep(),
+            ':date_depart' => $this->parcour->getDtDep(),
+
+
+            ':code_ville_depart' => $this->parcour->getVilleDep(),
+            ':code_ville_arrive' => $this->parcour->getVilleArr(),
+
+
+            ':fume' => $this->parcour->getFume(),
+            ':bagage' => $this->parcour->getBagage(),
+            ':animal' => $this->parcour->getAnimal(),
+            ':score' => $this->parcour->getScore(),
+
+            ':nbr_place' => $this->parcour->getNbrPlace(),
+            ':description' => $this->parcour->getDescription(),
+            ':tarif' => $this->parcour->getTarif()
 
 
         ));
 
     }
 
-    public function UpdateDate($code_parcours,$date_depart){
 
-        $sql ="UPDATE parcours SET date_depart=".$date_depart." WHERE Code_parcours =".$code_parcours;
-        $q = $this->getPDO()->exec($sql);
-    }
-    public function UpdateVilleDep($code_parcours,$code_ville_depart){
-        $sql ="UPDATE parcours SET code_ville_depart=".$code_ville_depart." WHERE Code_parcours =".$code_parcours;
-        $q = $this->getPDO()->exec($sql);
-    }
-    public function UpdateVilleArr($code_parcours,$code_ville_arrive){
-        $sql ="UPDATE parcours SET code_ville_arrive=".$code_ville_arrive." WHERE Code_parcours =".$code_parcours;
-        $q = $this->getPDO()->exec($sql);
-    }
-    public function UpdateHeure($code_parcours,$heure_depart){
-        $sql ="UPDATE parcours SET heure_depart=".$heure_depart." WHERE Code_parcours =".$code_parcours;
-        $q = $this->getPDO()->exec($sql);
-    }
-    public function query_delete_parcours($code_parcours)
-    {
-        $requet="DELETE FROM parcours WHERE Code_parcours=".$code_parcours;
-        $q = $this->getPDO()->exec($requet);
-    }
+
+
+        public function UpdateVilleDepart($ville_dep)
+        {
+            $sql = "UPDATE parcours SET code_ville_depart=" . $this->parcour->setVilleDep($ville_dep) . " WHERE Code_parcours =" . $this->parcour->getNumP();
+            $q = $this->getPDO()->exec($sql);
+        }
+
+        public function UpdateVilleArrive($ville_arr)
+        {
+            $sql = "UPDATE parcours SET code_ville_arrive=" . $this->parcour->setVilleArr($ville_arr) . " WHERE Code_parcours =" . $this->parcour->getNumP();
+            $q = $this->getPDO()->exec($sql);
+        }
+
+        public function UpdateDate($date)
+        {
+
+            $sql = "UPDATE parcours SET date_depart=" . $this->parcour->setDtDep($date) . " WHERE Code_parcours =" . $this->parcour->getNumP();
+            $q = $this->getPDO()->exec($sql);
+        }
+
+        public function UpdateHeure($hr_dep)
+        {
+            $sql = "UPDATE parcours SET heure_depart=" . $this->parcour->setHrDep($hr_dep) . " WHERE Code_parcours =" . $this->parcour->getNumP();
+            $q = $this->getPDO()->exec($sql);
+        }
+
+        public function UpdateTarif($tarif)
+        {
+            $sql = "UPDATE parcours SET tarif=". $this->parcour->setTarif($tarif) . " WHERE Code_parcours =" . $this->parcour->getNumP();
+            $q = $this->getPDO()->exec($sql);
+        }
+
+        public function UpdateFume($fume)
+        {
+            $sql = "UPDATE parcours SET fume=" . $this->parcour->setFume($fume) . " WHERE Code_parcours =" . $this->parcour->getNumP();
+            $q = $this->getPDO()->exec($sql);
+        }
+
+        public function UpdateBagage($bagage)
+        {
+            $sql = "UPDATE parcours SET bagage=" . $this->parcour->setBagage($bagage) . " WHERE Code_parcours =" . $this->parcour->getNumP();
+            $q = $this->getPDO()->exec($sql);
+        }
+         public function UpdateAnimal($animal){
+            $sql = "UPDATE parcours SET animal=" . $this->parcour->setBagage($animal) . " WHERE Code_parcours =" . $this->parcour->getNumP();
+            $q = $this->getPDO()->exec($sql);
+        }
+
+        public function UpdateDiscription($disc)
+        {
+            $sql = "UPDATE parcours SET description=" . $this->parcour->setDescription($disc) . " WHERE Code_parcours =" . $this->parcour->getNumP();
+            $q = $this->getPDO()->exec($sql);
+        }
+
+        public function UpdateNbrePlace($nbr_place)
+        {
+            $sql = "UPDATE parcours SET nbr_place=" . $this->parcour->setNbrPlace($nbr_place) . " WHERE Code_parcours =" . $this->parcour->getNumP();
+            $q = $this->getPDO()->exec($sql);
+        }
+
+        public function UpdateScore($score)
+        {
+            $sql = "UPDATE parcours SET score=" . $this->parcour->setScore($score) . " WHERE Code_parcours =" . $this->parcour->getNumP();
+            $q = $this->getPDO()->exec($sql);
+        }
+
+        public function query_delete_parcours()
+        {
+            $requet = "DELETE FROM parcours WHERE Code_parcours=" . $this->parcour->getNumP();
+            $q = $this->getPDO()->exec($requet);
+        }
+
     public function Reservation(){
         
-            $nb_place = $this->getNBR_PLACE() - 1;
-            $code_parcours = $this->getCodeParcours();
-            $sql = "UPDATE parcours SET nbr_place=" . $nb_place . " WHERE Code_parcours =" . $code_parcours;
+            $nb_place = $this->parcour->getNbrPlace() - 1;
+            $this->parcour->setNbrPlace($nb_place);
+
+            $sql = "UPDATE parcours SET nbr_place=".$nb_place." WHERE Code_parcours =" .$this->parcour->getNumP();
             $q = $this->getPDO()->exec($sql);
 
 

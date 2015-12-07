@@ -8,8 +8,8 @@
 //include("../covDAO/LoginDAO.php");
 include("UserWS.php");
 
-$login=$_GET['mail'];
-$pw=$_GET['pw'];
+$login=$_POST['mail'];
+$pw=$_POST['pw'];
 //$login_date = date("Y-m-d H:i:s");
 $user = new UserWS($login, $pw);
 $user->login();
